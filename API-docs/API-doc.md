@@ -17,6 +17,10 @@
 	- [**PATCH** `/users/me`](#patch-usersme)
 	- [**POST** `/users/me/changePassword`](#post-usersmechangepassword)
 	- [**GET** `/users/:id`](#get-usersid)
+	- [**POST** `/users/createOfficial`](#post-userscreateofficial)
+- [Institutions](#institutions)
+	- [**POST** `/institutions/`](#post-institutions-create-new-institution)
+	- [**PATCH** `/institutions/:id`](#patch-institutionsid)
  
 
 ### Authorization
@@ -431,5 +435,152 @@ permissions: authorized (user/admin/official)
 ```json
 {
 	"error": "user does not exist"
+}
+```
+
+#### **POST** `/users/createOfficial`
+permissions: admin
+- headers:
+```json
+{
+	"Authorization": "Bearer {{ accessToken }}"
+}
+```
+- body:
+```json
+{
+	"email": "string",
+	"institution": "number"
+}
+```
+
+**response**:
+
+200 OK:
+```json
+{
+	"id": "int",
+	"email": "string",
+	"status": "string (official)",
+	"name": "string (institution.name + '-official')",
+	"password": "string (random)"
+}
+```
+400 BadRequest:
+- Email must be unique
+```json
+{
+	"error": "user with specified email already exists"
+}
+```
+- Email must be valid
+```json
+{
+	"error": "specified email is not valid"
+}
+```
+401 Unauthorized:
+- Token expired
+```json
+{
+	"error": "token expired"
+}
+```
+- Wrong token
+```json
+{
+	"error": "wrong token"
+}
+```
+403 Forbidden:
+```json
+{
+	"error": "you do not have permission for this action"
+}
+```
+404 NotFound:
+```json
+{
+	"error": "institution does not exist"
+}
+```
+
+### Institutions
+
+#### **POST** `/institutions/` (create new institution)
+permissions: admin
+- headers:
+```json
+{
+	"Authorization": "Bearer {{ accessToken }}"
+}
+```
+- body:
+```json
+{
+	"name": "string",
+	"type": "string (school | university | college)",
+	"city": "string",
+	"website": "string | null"
+}
+```
+
+**response**:
+
+200 OK:
+```json
+{
+	"id": "int",
+	"name": "string",
+	"type": "string (school | university | college)",
+	"city": "string",
+	"website": "string | null",
+	"representative": "number | null"
+}
+```
+400 BadRequest
+- Type must take one of three values: school, university or college
+```json
+{
+	"error": "type must be 'school', 'university' or 'college'"
+}
+```
+
+#### **PATCH** `/institutions/:id`
+permissions: admin
+- headers:
+```json
+{
+	"Authorization": "Bearer {{ accessToken }}"
+}
+```
+- body:
+```json
+{
+	"name?": "string",
+	"type?": "string (school | university | college)",
+	"city?": "string",
+	"website?": "string | null"
+}
+```
+
+**response**:
+
+200 OK:
+```json
+{
+	"id": "int",
+	"name": "string",
+	"type": "string (school | university | college)",
+	"city": "string",
+	"website": "string | null",
+	"representative": "number | null"
+}
+```
+400 BadRequest
+- Type must take one of three values: school, university or college
+```json
+{
+	"error": "type must be 'school', 'university' or 'college'"
 }
 ```
