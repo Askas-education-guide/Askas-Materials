@@ -2,7 +2,7 @@
 
 ## Database schema
 
-[![DB Schema](Askas-DB.png)](https://drawsql.app/teams/askas/diagrams/askas-db)
+[![DB Schema](Askas-DB-2.png)](https://drawsql.app/teams/askas/diagrams/askas-db)
 [DrawSQL link](https://drawsql.app/teams/askas/diagrams/askas-db)
 
 ## Endpoints
