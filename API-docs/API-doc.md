@@ -23,6 +23,9 @@
 	- [**POST** `/institutions/`](#post-institutions-create-new-institution)
 	- [**PATCH** `/institutions/:id`](#patch-institutionsid)
 	- [**DELETE** `/institutions/:id`](#delete-institutionsid)
+	- [**GET** `/institutions/:id`](#get-institutionsid)
+	- [**GET** `/institutions/:id/from`](#get-institutionsidfrom)
+	- [**GET** `/institutions/:id/to`](#get-institutionsidto)
 - [Reviews](#reviews)
 	- [**POST** `/reviews/`](#post-reviews-create-new-review)
 	- [**PATCH** `/reviews/:id`](#patch-reviewsid)
@@ -646,6 +649,91 @@ permissions: admin
 ```json
 {
 	"error": "review not found"
+}
+```
+
+#### **GET** `/institutions/:id`
+permissions: all
+
+**response**:
+
+200 OK:
+```json
+{
+	"id": "int",
+	"name": "string",
+	"type": "string (school | university | college)",
+	"city": "string",
+	"website": "string | null",
+	"representative": "number | null"
+}
+```
+404 NotFound:
+```json
+{
+	"error": "institution not found"
+}
+```
+
+#### **GET** `/institutions/:id/from`
+permissions: all
+
+Endpoint returns statistics about students from which institutions enter the given institution
+
+**response**:
+
+200 OK:
+```json
+{
+	"total": "number",
+	"data": [
+		{
+			"institution": "number",
+			"students": "number"
+		},
+		{
+			"institution": "number",
+			"students": "number"
+		},
+		"..."
+	],
+}
+```
+404 NotFound:
+```json
+{
+	"error": "institution not found"
+}
+```
+
+#### **GET** `/institutions/:id/to`
+permissions: all
+
+Endpoint returns statistics about where graduates of a given educational institution go
+
+**response**:
+
+200 OK:
+```json
+{
+	"total": "number",
+	"data": [
+		{
+			"institution": "number",
+			"students": "number"
+		},
+		{
+			"institution": "number",
+			"students": "number"
+		},
+		"..."
+	],
+}
+```
+404 NotFound:
+```json
+{
+	"error": "institution not found"
 }
 ```
 
