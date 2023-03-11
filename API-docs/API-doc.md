@@ -15,13 +15,18 @@
 	- [**POST** `/users/`](#post-users-create-new-user)
 	- [**GET** `/users/me`](#get-usersme)
 	- [**PATCH** `/users/me`](#patch-usersme)
+	- [**DELETE** `/users/me`](#delete-usersme)
 	- [**POST** `/users/me/changePassword`](#post-usersmechangepassword)
 	- [**GET** `/users/:id`](#get-usersid)
 	- [**POST** `/users/createOfficial`](#post-userscreateofficial)
 - [Institutions](#institutions)
 	- [**POST** `/institutions/`](#post-institutions-create-new-institution)
 	- [**PATCH** `/institutions/:id`](#patch-institutionsid)
- 
+	- [**DELETE** `/institutions/:id`](#delete-institutionsid)
+- [Reviews](#reviews)
+	- [**POST** `/reviews/`](#post-reviews-create-new-review)
+	- [**PATCH** `/reviews/:id`](#patch-reviewsid)
+	- [**DELETE** `/reviews/:id`](#delete-reviewsid)
 
 ### Authorization
 
@@ -118,6 +123,8 @@ permissions: all
 ```json
 {
 	"id": "int",
+	"created_at": "string",
+	"deleted_at": "string",
 	"email": "string",
 	"status": "string (user | admin | official)",
 	"name": "string",
@@ -215,6 +222,8 @@ permissions: authorized (user/admin/official)
 ```json
 {
 	"id": "int",
+	"created_at": "string",
+	"deleted_at": "string",
 	"email": "string",
 	"status": "string (user | admin | official)",
 	"name": "string",
@@ -268,6 +277,8 @@ permissions: authorized (user/admin/official)
 ```json
 {
 	"id": "int",
+	"created_at": "string",
+	"deleted_at": "string",
 	"email": "string",
 	"status": "string (user | admin | official)",
 	"name": "string",
@@ -318,6 +329,30 @@ permissions: authorized (user/admin/official)
 ```json
 {
 	"error": "user does not exist"
+}
+```
+
+#### **DELETE** `/users/me`
+permissions: user | admin
+- headers:
+```json
+{
+	"Authorization": "Bearer {{ accessToken }}"
+}
+```
+
+**response**:
+
+204 NoContent:
+```json
+{
+	"message": "account deleted succesfully"
+}
+```
+404 NotFound:
+```json
+{
+	"error": "user not found"
 }
 ```
 
@@ -411,6 +446,8 @@ permissions: authorized (user/admin/official)
 ```json
 {
 	"id": "int",
+	"created_at": "string",
+	"deleted_at": "string",
 	"status": "string (user | admin | official)",
 	"name": "string",
 	"date_of_birth": "string (timestamptz)",
@@ -460,6 +497,8 @@ permissions: admin
 ```json
 {
 	"id": "int",
+	"created_at": "string",
+	"deleted_at": "string",
 	"email": "string",
 	"status": "string (official)",
 	"name": "string (institution.name + '-official')",
@@ -582,5 +621,188 @@ permissions: admin
 ```json
 {
 	"error": "type must be 'school', 'university' or 'college'"
+}
+```
+
+#### **DELETE** `/institutions/:id`
+permissions: admin
+- headers:
+```json
+{
+	"Authorization": "Bearer {{ accessToken }}"
+}
+```
+
+**response**:
+
+204 NoContent:
+```json
+{
+	"message": "institution deleted succesfully"
+}
+```
+404 NotFound:
+```json
+{
+	"error": "review not found"
+}
+```
+
+### Reviews
+
+#### **POST** `/reviews/` (create new review)
+permissions: user | admin
+- headers:
+```json
+{
+	"Authorization": "Bearer {{ accessToken }}"
+}
+```
+- body:
+```json
+{
+	"institution": "number",
+	"rating": "number",
+	"anonymous": "bool",
+	"first_year_of_study": "number | null",
+	"last_year_of_study": "number | null",
+	"study_program": "string | null",
+	"text": "string | null"
+}
+```
+
+**response**:
+
+200 OK:
+```json
+{
+	"id": "int",
+	"created_at": "string",
+	"updated_at": "string",
+	"deleted_at": "string",
+	"author": "number",
+	"institution": "number",
+	"rating": "number",
+	"verified": "bool",
+	"anonymous": "bool",
+	"first_year_of_study": "number | null",
+	"last_year_of_study": "number | null",
+	"study_program": "string | null",
+	"text": "string | null"
+}
+```
+400 BadRequest:
+- Rating must be a decimal value between 0.0 and 5.0
+```json
+{
+	"error": "rating must be a decimal value between 0.0 and 5.0"
+}
+```
+- Years of study must be valid (first < last, first <= current_year)
+```json
+{
+	"error": "years of study are invalid"
+}
+```
+- User can post only one review per institution
+```json
+{
+	"error": "you can post only one review per institution"
+}
+```
+403 Forbidden:
+```json
+{
+	"error": "you do not have permission for this action"
+}
+```
+404 NotFound:
+```json
+{
+	"error": "institution does not exist"
+}
+```
+
+#### **PATCH** `/reviews/:id`
+permissions: user | admin (only if user == review.author)
+- headers:
+```json
+{
+	"Authorization": "Bearer {{ accessToken }}"
+}
+```
+- body:
+```json
+{
+	"rating?": "number",
+	"anonymous?": "bool",
+	"first_year_of_study?": "number | null",
+	"last_year_of_study?": "number | null",
+	"study_program?": "string | null",
+	"text?": "string | null"
+}
+```
+
+**response**:
+
+200 OK:
+```json
+{
+	"id": "int",
+	"created_at": "string",
+	"updated_at": "string",
+	"deleted_at": "string",
+	"author": "number",
+	"institution": "number",
+	"rating": "number",
+	"verified": "bool",
+	"anonymous": "bool",
+	"first_year_of_study": "number | null",
+	"last_year_of_study": "number | null",
+	"study_program": "string | null",
+	"text": "string | null"
+}
+```
+400 BadRequest:
+- Rating must be a decimal value between 0.0 and 5.0
+```json
+{
+	"error": "rating must be a decimal value between 0.0 and 5.0"
+}
+```
+- Years of study must be valid (first < last, first <= current_year)
+```json
+{
+	"error": "years of study are invalid"
+}
+```
+403 Forbidden:
+```json
+{
+	"error": "you do not have permission for this action"
+}
+```
+
+#### **DELETE** `/reviews/:id`
+permissions: user | admin (only if user == review.author)
+- headers:
+```json
+{
+	"Authorization": "Bearer {{ accessToken }}"
+}
+```
+
+**response**:
+
+204 NoContent:
+```json
+{
+	"message": "review deleted succesfully"
+}
+```
+404 NotFound:
+```json
+{
+	"error": "review not found"
 }
 ```
