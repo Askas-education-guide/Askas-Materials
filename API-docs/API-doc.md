@@ -27,6 +27,7 @@
 	- [**POST** `/reviews/`](#post-reviews-create-new-review)
 	- [**PATCH** `/reviews/:id`](#patch-reviewsid)
 	- [**DELETE** `/reviews/:id`](#delete-reviewsid)
+	- [**GET** `/reviews/?about=int&from=int`](#get-reviewsaboutintfromint)
 
 ### Authorization
 
@@ -804,5 +805,37 @@ permissions: user | admin (only if user == review.author)
 ```json
 {
 	"error": "review not found"
+}
+```
+
+#### **GET** `/reviews/?about=int&from=int`
+permissions: all
+
+At least one argument `about`/`from` is necessary.
+Endpoint returns all reviews about specified institution (`about`) from graduates of specified institution (`from`).
+
+**response**:
+
+200 OK:
+```json
+{
+	"page": "number",
+	"total_pages": "number",
+	"next_page": "string | null",
+	"prev_page": "string | null",
+	"objects_count": "number",
+	"objects": [
+		"<Review 1>",
+		"<Review 2>",
+		"<Review 3>",
+		"..."
+	]
+}
+```
+400 BadRequest:
+- At least one argument `about`/`from` is necessary
+```json
+{
+	"error": "at least one argument `about`/`from` is necessary"
 }
 ```
